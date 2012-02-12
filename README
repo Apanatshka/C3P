@@ -1,0 +1,9 @@
+C3P: C-compatible code preprocessor. 
+
+Mostly following the functionality of the C preprocessor. Only this tool is
+ language independant. 
+Although there are plenty of macro preprocessors, this tool is supposed to be
+ extremely easy to learn. To keep it easy to learn, the extent of it's
+ capabilities is intentionally kept small. 
+
+This software is licensed under the MIT license, see the LICENSE file. 
