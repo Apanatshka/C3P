@@ -1,0 +1,6 @@
+#define THIS To be replaced
+replace THIS
+THIS needs to be replaced
+but not This, or ThIs, or this..
+!@#$%^&*(THIS+_)(*&^%$#@!~ doesn't matter
+It still needs to be replaced

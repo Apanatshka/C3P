@@ -1,0 +1,4 @@
+#define THIS To be replaced
+replace THIS
+#undef THIS
+THIS shouldn't be replaced anymore

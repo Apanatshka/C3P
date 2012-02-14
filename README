@@ -4,6 +4,9 @@ Mostly following the functionality of the C preprocessor. Only this tool is
  language independant. 
 Although there are plenty of macro preprocessors, this tool is supposed to be
  extremely easy to learn. To keep it easy to learn, the extent of it's
- capabilities is intentionally kept small. 
+ capabilities are intentionally kept minimal. 
 
-This software is licensed under the MIT license, see the LICENSE file. 
+This software is licensed under GPL license, see the LICENSE file. 
+
+You can contact me by email:
+mailto:jeff.smits@gmail.com
