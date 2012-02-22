@@ -1,0 +1,1 @@
+.invalid doesn't get replaced

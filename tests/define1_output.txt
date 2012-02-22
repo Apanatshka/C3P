@@ -1,5 +1,5 @@
-replace To be replaced
-To be replaced needs to be replaced
+replace <replacement>
+<replacement> needs to be replaced
 but not This, or ThIs, or this..
-!@#$%^&*(To be replaced+_)(*&^%$#@!~ doesn't matter
+!@#$%^&*(<replacement>+_)(*&^%$#@!~ doesn't matter
 It still needs to be replaced

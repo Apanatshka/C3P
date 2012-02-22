@@ -1,2 +1,2 @@
-replace To be replaced
+replace < replacement >
 THIS shouldn't be replaced anymore

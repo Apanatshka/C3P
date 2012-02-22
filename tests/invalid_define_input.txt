@@ -1,0 +1,2 @@
+#define .invalid <replacement>
+.invalid doesn't get replaced

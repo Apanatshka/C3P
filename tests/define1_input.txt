@@ -1,4 +1,4 @@
-#define THIS To be replaced
+#define THIS <replacement>
 replace THIS
 THIS needs to be replaced
 but not This, or ThIs, or this..
