@@ -1,0 +1,6 @@
+Start of the file
+something needs indent:
+	 * some list
+	 * lala
+	 * WEIGHTED stuff has the weight of:
+		 * 25kg

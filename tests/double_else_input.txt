@@ -1,0 +1,5 @@
+#ifdef UNDEFINED
+#else
+#else
+#endif
+Lol, that second else is not allowed

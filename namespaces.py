@@ -41,7 +41,7 @@ class NameSpace: #abstract class
 		map[identifier] = (False, value)
 	
 	def exists(self, identifier):
-		return identifier in map.keys()
+		return identifier in self.map.keys()
 	
 	def get(self, identifier): #abstract function
 		raise NotImplementedError

@@ -1,0 +1,5 @@
+#ifdef DEFINED
+this will be in the output only when DEFINED is defined
+#else
+else this will be in the output
+#endif

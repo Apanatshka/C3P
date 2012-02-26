@@ -1,0 +1,8 @@
+#define DEFINED
+#ifdef DEFINED
+this will be in the output only when DEFINED is defined
+#endif
+#undef DEFINED
+#ifdef DEFINED
+so this won't be in the output
+#endif

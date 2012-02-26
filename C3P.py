@@ -36,19 +36,23 @@ class C3P:
 		 which should be configurable by the user in a later version. 
 		After that it just calls the next function to do the rest. """
 		#get parser
-		parser = self.get_parser()
+		argparser = self.get_argparser()
 		#parse arguments
-		args = self.args = parser.parse_args()
+		args = self.args = argparser.parse_args()
 		
 		args.command_prefix = "#"
 		args.quiet = False
-		self.options.var_prefix = ""
-		self.options.empty_line = False
+		self.options = {}
+		self.options["var_prefix"] = ""
+		self.options["empty_line"] = False
+		
+		self.conditions = []
+		self.else_found = []
 		
 		#this function holds the loop through the input file
-		self.do_stuff()
+		self.main_loop()
 	
-	def get_parser(self):
+	def get_argparser(self):
 		"""Definition/creation of the argument parser for the command-line
 		 arguments of the tool. """
 		import argparse
@@ -130,12 +134,14 @@ class C3P:
 		else:
 			return matches.group(1,2)
 	
-	def do_stuff(self):
+	def main_loop(self):
 		"""The loop through the lines of the input on which it does stuff. """
 		import namespaces
 		
 		input = self.args.file
 		output = self.args.dest
+		
+		iffy_stack = self.conditions
 		
 		#different namespaces may be used in a later version of the tool to be
 		# able to easily undefine a group of macro's
@@ -151,12 +157,13 @@ class C3P:
 			
 			#only output a line when there was more than whitespace before the
 			# command prefix, or when the empty_line option is True. 
-			if self.options.empty_line || before.strip() != "":
-				output.write(self.replace_stuff(namespace, before))
+			if len(iffy_stack) == 0 or iffy_stack[-1]:
+				if self.options["empty_line"] or before.strip() != "":
+					output.write(self.replace_object_macro(namespace, before))
 			if command != "":
 				self.get_command_func(command)(self, namespace, after)
 	
-	def replace_stuff(self, namespace, input):
+	def replace_object_macro(self, namespace, input):
 		"""The replacement of defined object macro's to their values"""
 		#split into potentially replaceable parts and non-replaceable parts
 		words = re.split(r"(\W+)", input)
@@ -173,12 +180,12 @@ class C3P:
 				output += replacement
 		return output
 	
-	def define(self, namespace, string):
+	def command_define(self, namespace, string):
 		"""The define command"""
 		#get an identifier for the definition
 		matches = re.match(r"\s*(\w+)(.*)", string)
 		if matches == None:
-			self.error("unable to find valid identifier for 'define' command in "
+			self.error("Unable to find valid identifier for `define` command in "
 				+repr(string.strip()))
 			return
 		
@@ -196,28 +203,58 @@ class C3P:
 		
 		namespace.set_var(name, value)
 	
-	def undefine(self, namespace, string):
+	def command_undefine(self, namespace, string):
 		"""The undef command"""
 		#get the identifier
 		matches = re.match(r"\s*(\w+)", string)
 		if matches == None:
-			self.error("unable to find valid identifier for 'undefine' command in "
+			self.error("Unable to find valid identifier for `undefine` command in "
 				+repr(string.strip()))
 			return
 		
 		name = matches.group(1)
 		namespace.unset(name)
 	
+	def command_ifdef(self, namespace, string):
+		self.conditions.append(namespace.exists(string.strip()))
+		self.else_found.append(False)
+	
+	def command_ifndef(self, namespace, string):
+		self.conditions.append(not namespace.exists(string.strip()))
+		self.else_found.append(False)
+	
+	def command_else(self, namespace, string):
+		try:
+			if not self.else_found.pop():
+				self.conditions.append(not self.conditions.pop())
+			else:
+				self.error("An `else` was already found earlier. ")
+			self.else_found.append(True)
+		except IndexError:
+			self.error("No `if` found to match the `else`. ")
+	
+	def command_endif(self, namespace, string):
+		try:
+			self.conditions.pop()
+			self.else_found.pop()
+		except IndexError:
+			self.error("No `if` found to match the `endif`. ")
+	
 	func_map = {
-		"define": define,
-		#"def": define,
-		"undef": undefine,
+		"define": command_define,
+#		"def":    command_define,
+		"undef":  command_undefine,
+		"ifdef":  command_ifdef,
+		"ifndef": command_ifndef,
+		"else":   command_else,
+		"endif":  command_endif,
 	}
 	
 	def error(self, msg):
-		if !self.args.quiet:
-			print("c3p error on line "+str(self.lineNo)+" in file "
-				+repr(self.args.file.name)+": "+msg)
+		import os.path
+		if not self.args.quiet:
+			print("c3p \"{}\":{}: error. {}"
+				.format(os.path.abspath(self.args.file.name), self.lineNo, msg))
 
 if __name__ == "__main__":
 	C3P()
