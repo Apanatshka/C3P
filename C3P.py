@@ -28,7 +28,7 @@ class C3P:
 	"""C3P class wrapper"""
 	#Don't know on what to base this number yet. 
 	#The plan for now is major = milestone, minor = revision. 
-	version = "0.1"
+	version = "1.0"
 	
 	def __init__(self):
 		"""Constructor. 
@@ -40,8 +40,6 @@ class C3P:
 		#parse arguments
 		args = self.args = argparser.parse_args()
 		
-		args.command_prefix = "#"
-		args.quiet = False
 		self.options = {}
 		self.options["var_prefix"] = ""
 		self.options["empty_line"] = False
@@ -59,27 +57,33 @@ class C3P:
 		
 		parser = self.parser = argparse.ArgumentParser(description="this"
 			" commandline tools reads a file and expands macro's ", prog="c3p",
-			usage="%(prog)s -f FILE [optional arguments] DEST", add_help=False)
-		
-		optional_args = parser.add_argument_group(title="optional arguments")
-		
-		#optional_args.add_argument("-s", "--shebang", type=Boolean, default=False)
-		#optional_args.add_argument("-c", "--command-prefix", default="#")
+			usage="%(prog)s -f FILE [-s] [-c CP] [-q | -v] dest", add_help=False)
 		
 		required_args = parser.add_argument_group(title="required arguments")
 		
 		required_args.add_argument("-f", "--file", type=argparse.FileType("r"),
 			required=True, help="file to read", metavar="FILE", dest="file")
-		
 		required_args.add_argument("dest", type=argparse.FileType("w"), 
 			help="file to write to")
 		
+		optional_args = parser.add_argument_group(title="optional arguments")
+		
+		optional_args.add_argument("-s", "--shebang", action="store_true",
+			help="remove the first line so you can use a shebang for this tool",
+			dest="shebang")
+		optional_args.add_argument("-c", "--command-prefix", default="#",
+			metavar="CP", help="set the command prefix to CP",
+			dest="command_prefix")
+		qv = optional_args.add_mutually_exclusive_group()
+		qv.add_argument("-q", "--quiet", action="store_true",
+			help="keep from outputting errors", dest="quiet")
+		qv.add_argument("-v", "--verbose", action="store_true",
+			help="output lots of stuff", dest="verbose")
 		
 		other_args = parser.add_argument_group(title="additional arguments")
 		
 		other_args.add_argument("-h", "--help", action="help",
 			help="show this help message and exit")
-		
 		other_args.add_argument("--version", action="version", 
 			version="%(prog)s "+self.version)
 		
@@ -149,6 +153,10 @@ class C3P:
 		
 		#the linenumber is used in error messages
 		self.lineNo = 0
+		
+		if self.args.shebang:
+			self.lineNo += 1
+			line = input.readLine()
 		
 		for line in input:
 			self.lineNo += 1
