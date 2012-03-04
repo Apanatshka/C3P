@@ -57,14 +57,15 @@ class C3P:
 		
 		parser = self.parser = argparse.ArgumentParser(description="this"
 			" commandline tools reads a file and expands macro's ", prog="c3p",
-			usage="%(prog)s -f FILE [-s] [-c CP] [-q | -v] dest", add_help=False)
+			usage="%(prog)s -d DEST [-s] [-c CP] [-q | -v] file", add_help=False)
 		
 		required_args = parser.add_argument_group(title="required arguments")
 		
-		required_args.add_argument("-f", "--file", type=argparse.FileType("r"),
-			required=True, help="file to read", metavar="FILE", dest="file")
-		required_args.add_argument("dest", type=argparse.FileType("w"), 
-			help="file to write to")
+		required_args.add_argument("-d", "--destination", metavar="DEST", 
+			required=True, type=argparse.FileType("w"), help="file to write to", 
+			dest="dest")
+		required_args.add_argument("file", type=argparse.FileType("r"), 
+			help="file to read")
 		
 		optional_args = parser.add_argument_group(title="optional arguments")
 		
@@ -97,6 +98,15 @@ class C3P:
 		"""Just a map from string to function"""
 		if self.is_command(command):
 			return self.func_map[command]
+		else:
+			raise ValueError("Command not found")
+	
+	def command_allowed(self, command):
+		maplist = self.allow_maps
+		if len(self.conditions) == 0 or self.conditions[-1]:
+			return command in maplist[0] or command in maplist[1]
+		else:
+			return command in maplist[0]
 	
 	def command_split(self, line):
 		"""Split line on before_text, command and after_text. When no command is
@@ -114,10 +124,10 @@ class C3P:
 			before_text += temp_text
 			
 			#see if a valid command is after the prefix
-			split = self.get_command(todo)
-			if len(split) == 2:
-				(command, after_text) = split
+			try:
+				(command, after_text) = self.get_command(todo)
 				break
+			except ValueError: pass
 			
 			#if no command found, add the prefix to the before text
 			before_text += self.args.command_prefix
@@ -129,14 +139,17 @@ class C3P:
 		
 		return (before_text, command, after_text)
 	
-	def get_command(self, string):
+	def get_command(self, string, mode):
 		"""Extract command according to rules defined by command-line flags. """
 		#TODO: add option not to reject whitespace before command
-		matches = re.match(r"\s*(\w+)([\s\S]*)", string)
+		matches = re.match(r"\s*(\w+)\s([\s\S]*)", string)
 		if matches == None:
-			return string
+			raise ValueError("Not a valid command string")
 		else:
 			return matches.group(1,2)
+	
+	def last_condition(self):
+		return len(self.conditions) == 0 or self.conditions[-1]
 	
 	def main_loop(self):
 		"""The loop through the lines of the input on which it does stuff. """
@@ -166,9 +179,10 @@ class C3P:
 			#only output a line when there was more than whitespace before the
 			# command prefix, or when the empty_line option is True. 
 			if len(iffy_stack) == 0 or iffy_stack[-1]:
-				if self.options["empty_line"] or before.strip() != "":
+				if (before.strip() != "" 
+						or (self.options["empty_line"] and command == "")):
 					output.write(self.replace_object_macro(namespace, before))
-			if command != "":
+			if command != "" and self.command_allowed(command):
 				self.get_command_func(command)(self, namespace, after)
 	
 	def replace_object_macro(self, namespace, input):
@@ -203,11 +217,11 @@ class C3P:
 		
 		#try to make a number of the value, otherwise keep the string
 		try:
-			value = float(value)
-		except ValueError: pass
-		try:
 			value = int(value)
-		except ValueError: pass
+		except ValueError: 
+			try:
+				value = float(value)
+			except ValueError: pass
 		
 		namespace.set_var(name, value)
 	
@@ -224,17 +238,20 @@ class C3P:
 		namespace.unset(name)
 	
 	def command_ifdef(self, namespace, string):
-		self.conditions.append(namespace.exists(string.strip()))
+		self.conditions.append(namespace.exists(string.strip()) 
+			and self.last_condition()
 		self.else_found.append(False)
 	
 	def command_ifndef(self, namespace, string):
-		self.conditions.append(not namespace.exists(string.strip()))
+		self.conditions.append(not namespace.exists(string.strip()) 
+			and self.last_condition()
 		self.else_found.append(False)
 	
 	def command_else(self, namespace, string):
 		try:
 			if not self.else_found.pop():
-				self.conditions.append(not self.conditions.pop())
+				self.conditions.append(not self.conditions.pop()
+					and self.last_condition()
 			else:
 				self.error("An `else` was already found earlier. ")
 			self.else_found.append(True)
@@ -257,6 +274,11 @@ class C3P:
 		"else":   command_else,
 		"endif":  command_endif,
 	}
+	
+	allow_maps = [
+		{"ifdef", "ifndef", "else", "endif"}, #0 == always
+		{"define", "undef"}, #1 == while inside an if with condition == True
+	]
 	
 	def error(self, msg):
 		import os.path
