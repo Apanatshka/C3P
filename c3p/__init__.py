@@ -20,11 +20,17 @@
 # C3P - C-compatible code preprocessor
 # This commandline tool reads a file and expands macro's. 
 #
-# Known encoding issue: Please note that Python cannot handle a BOM in a UTF-8
-# encoded file without special care, which I did not add. 
+# This file is a utility file and doesn't contain the whole tool. 
 
-if __name__ == "__main__":
-	from c3p import Argparser
-	from c3p import Main
-	
-	Main(**vars(Argparser.get_args()))
+__all__ = [
+	"Main", 
+	"Argparser", 
+	"Command", 
+	"commands", 
+]
+
+#import the classes
+if __name__ == "c3p":
+	from .Main import Main
+	from .Argparser import Argparser
+	from .Command import Command
