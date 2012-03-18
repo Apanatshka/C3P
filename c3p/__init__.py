@@ -27,6 +27,7 @@ __all__ = [
 	"Argparser", 
 	"Command", 
 	"commands", 
+	"namespaces", 
 ]
 
 #import the classes
@@ -34,3 +35,4 @@ if __name__ == "c3p":
 	from .Main import Main
 	from .Argparser import Argparser
 	from .Command import Command
+	from . import namespaces

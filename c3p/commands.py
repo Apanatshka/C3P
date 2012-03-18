@@ -22,6 +22,8 @@
 #
 # This file is a utility file and doesn't contain the whole tool. 
 
+import re
+
 def _define(namespace, string, last_condition, conditions, else_found):
 	"""The define command"""
 	#get an identifier for the definition

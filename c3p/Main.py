@@ -22,10 +22,12 @@
 #
 # This file is a utility file and doesn't contain the whole tool. 
 import re
-if __name__ == "__main__":
+if __name__ == "__main__" or __name__ == "Main":
 	from Command import Command
+	import namespaces
 else:
 	from .Command import Command
+	from . import namespaces
 
 class Main:
 	"""Command parser and wrapper for the main loop and helper functions. """
@@ -43,7 +45,7 @@ class Main:
 		
 		#set some more things
 		self.options = {
-			"empty_line": False,
+			"empty_line": True,
 		}
 		self.conditions = []
 		self.else_found = []
@@ -104,7 +106,6 @@ class Main:
 	
 	def main_loop(self):
 		"""The loop through the lines of the input on which it does stuff. """
-		import namespaces
 		
 		input = self.file
 		output = self.dest
@@ -161,7 +162,7 @@ class Main:
 				output += word
 			else:
 				#variable found? replace :D
-				output += replacement
+				output += str(replacement)
 		return output
 	
 	def error(self, msg):

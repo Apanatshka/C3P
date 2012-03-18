@@ -22,9 +22,7 @@
 #
 # This file is a utility file and doesn't contain the whole tool. 
 
-if __name__ == "__main__":
-	import commands
-elif __name__ == "Command":
+if __name__ == "__main__" or __name__ == "Command":
 	import commands
 else:
 	from . import commands
