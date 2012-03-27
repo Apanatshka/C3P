@@ -32,20 +32,20 @@ else:
 class Main:
 	"""Command parser and wrapper for the main loop and helper functions. """
 	
-	def __init__(self, file, dest, shebang = False, command_prefix = "#",
-			var_prefix = "", quiet = False, verbose = False):
+	def __init__(self, dest, file, shebang = False, command_prefix = "#",
+			quiet = False, verbose = False):
 		#save the input arguments
 		self.file = file
 		self.dest = dest
 		self.shebang = shebang
 		self.command_prefix = command_prefix
-		self.var_prefix = var_prefix
 		self.quiet = quiet
 		self.verbose = verbose and not quiet
 		
 		#set some more things
 		self.options = {
 			"empty_line": True,
+			"var_prefix": "",
 		}
 		self.conditions = []
 		self.else_found = []
