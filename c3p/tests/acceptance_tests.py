@@ -22,6 +22,8 @@
 #
 # This file is a utility file and doesn't contain the whole tool. 
 # Also it does not run standalone. 
+#
+# These are acceptance tests, recycled from some static I/O tests
 
 import unittest
 from io import StringIO
@@ -51,7 +53,7 @@ class Acc_test(unittest.TestCase):
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
 			output = o.read()
 		self.assertEqual(result.replace(linesep, '\n'), output)
-		self.assertEqual(len(self.errors), 0)
+		self.assertEqual(0, len(self.errors))
 	
 	def test_undef1(self):
 		test_name = "undef1"
@@ -63,7 +65,7 @@ class Acc_test(unittest.TestCase):
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
 			output = o.read()
 		self.assertEqual(result.replace(linesep, '\n'), output)
-		self.assertEqual(len(self.errors), 0)
+		self.assertEqual(0, len(self.errors))
 	
 	def test_ifdef(self):
 		test_name = "ifdef"
@@ -75,7 +77,7 @@ class Acc_test(unittest.TestCase):
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
 			output = o.read()
 		self.assertEqual(result.replace(linesep, '\n'), output)
-		self.assertEqual(len(self.errors), 0)
+		self.assertEqual(0, len(self.errors))
 	
 	def test_else(self):
 		test_name = "else"
@@ -87,7 +89,7 @@ class Acc_test(unittest.TestCase):
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
 			output = o.read()
 		self.assertEqual(result.replace(linesep, '\n'), output)
-		self.assertEqual(len(self.errors), 0)
+		self.assertEqual(0, len(self.errors))
 	
 	def test_whitespace(self):
 		test_name = "whitespace"
@@ -99,7 +101,55 @@ class Acc_test(unittest.TestCase):
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
 			output = o.read()
 		self.assertEqual(result.replace(linesep, '\n'), output)
-		self.assertEqual(len(self.errors), 0)
+		self.assertEqual(0, len(self.errors))
+	
+	def test_invalid_define(self):
+		test_name = "invalid_define"
+		r = StringIO()
+		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
+			self.m(**{'dest': r, 'file': file})
+		result = r.getvalue()
+		r.close()
+		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
+			output = o.read()
+		self.assertEqual(result.replace(linesep, '\n'), output)
+		self.assertEqual(1, len(self.errors))
+		self.assertIn("identifier", self.errors[0])
+		self.assertIn("define", self.errors[0])
+	
+	def test_double_else(self):
+		test_name = "double_else"
+		r = StringIO()
+		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
+			self.m(**{'dest': r, 'file': file})
+		result = r.getvalue()
+		r.close()
+		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
+			output = o.read()
+		self.assertEqual(result.replace(linesep, '\n'), output)
+		self.assertEqual(1, len(self.errors))
+		self.assertIn("else", self.errors[0])
+		self.assertIn("already found", self.errors[0])
+	
+	def test_unmatched(self):
+		test_name = "unmatched"
+		r = StringIO()
+		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
+			self.m(**{'dest': r, 'file': file})
+		result = r.getvalue()
+		r.close()
+		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
+			output = o.read()
+		self.assertEqual(result.replace(linesep, '\n'), output)
+		self.assertEqual(2, len(self.errors))
+		self.assertIn("if", self.errors[0])
+		self.assertIn("found", self.errors[0])
+		self.assertIn("match", self.errors[0])
+		self.assertIn("else", self.errors[0])
+		self.assertIn("if", self.errors[1])
+		self.assertIn("found", self.errors[1])
+		self.assertIn("match", self.errors[1])
+		self.assertIn("endif", self.errors[1])
 
 def load_tests(loader, tests, pattern):
 	suite = unittest.TestSuite()
