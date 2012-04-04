@@ -49,9 +49,6 @@ class Main:
 		}
 		self.conditions = []
 		self.else_found = []
-		
-		#this function holds the loop through the input file
-		self.main_loop()
 	
 	def command_split(self, line):
 		"""Split line on before_text, command and after_text. When no command is
@@ -93,7 +90,7 @@ class Main:
 			if matches == None:
 				raise ValueError("Not a valid command string")
 			else:
-				matches = (matches, "")
+				matches = (matches.group(1), "")
 		else:
 			matches = matches.group(1,2)
 		return matches

@@ -47,7 +47,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "define1"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -59,7 +59,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "undef1"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -71,7 +71,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "ifdef"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -83,7 +83,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "else"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -95,7 +95,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "whitespace"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -107,7 +107,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "invalid_define"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -121,7 +121,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "double_else"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -135,7 +135,7 @@ class Acc_test(unittest.TestCase):
 		test_name = "unmatched"
 		r = StringIO()
 		with open(self.dir+"acc_tests_io/"+test_name+"_input.txt") as file:
-			self.m(**{'dest': r, 'file': file})
+			self.m(**{'dest': r, 'file': file}).main_loop()
 		result = r.getvalue()
 		r.close()
 		with open(self.dir+"acc_tests_io/"+test_name+"_output.txt") as o:
@@ -153,7 +153,6 @@ class Acc_test(unittest.TestCase):
 
 def load_tests(loader, tests, pattern):
 	suite = unittest.TestSuite()
-	for test_class in (Acc_test,):
-		tests = loader.loadTestsFromTestCase(test_class)
-		suite.addTests(tests)
+	tests = loader.loadTestsFromTestCase(Acc_test)
+	suite.addTests(tests)
 	return suite

@@ -27,4 +27,4 @@ if __name__ == "__main__":
 	from c3p import Argparser
 	from c3p import Main
 	
-	Main(**vars(Argparser.get_args()))
+	Main(**vars(Argparser.get_args())).main_loop()

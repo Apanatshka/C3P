@@ -26,6 +26,6 @@ if __name__ == "__main__":
 	import unittest
 	import c3p
 	
-	#unittest.main(module="c3p.tests.all_tests", verbosity=2)
-	unittest.main(module="c3p.tests.acceptance_tests", verbosity=2)
+	unittest.main(module="c3p.tests.all_tests", verbosity=2)
+	#unittest.main(module="c3p.tests.acceptance_tests", verbosity=2)
 	#unittest.main(module="c3p.tests.unit_tests", verbosity=2)
