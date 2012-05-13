@@ -25,7 +25,7 @@ class NameSpace: #abstract class
 	is_variable = 0
 	value = 1
 	
-	def __init__(self, parent = None): #inheritable function for __init__
+	def __init__(self, parent = None):
 		assert id(parent) != id(self)
 		self.map = {}
 		self.parent = parent

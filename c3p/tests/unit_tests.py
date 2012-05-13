@@ -26,3 +26,4 @@
 # This file just imports all the unit tests
 
 from .main_unit_test import Main_unit_test
+from .namespaces_unit_test import Namespaces_unit_test
